@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { insforge } from '../lib/insforge';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, Key, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Key, User, ArrowRight, Loader2, Store, Briefcase } from 'lucide-react';
 import { LogoAvil } from '../App'; // Importing the logo component from App
+import CustomSelect from './CustomSelect';
 
 export default function Login() {
-    const { setUser, setSession } = useAuth();
+    const { handleLoginSuccess } = useAuth();
     const [view, setView] = useState('sign-in'); // 'sign-in' | 'sign-up' | 'verify-email' | 'forgot-password' | 'reset-password'
 
     const [email, setEmail] = useState('');
@@ -15,6 +16,28 @@ export default function Login() {
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // New fields for sign-up
+    const [stores, setStores] = useState([]);
+    const [functions, setFunctions] = useState([]);
+    const [storeId, setStoreId] = useState('');
+    const [functionId, setFunctionId] = useState('');
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [storesRes, functionsRes] = await Promise.all([
+                    insforge.database.from('stores').select('*').order('name', { ascending: true }),
+                    insforge.database.from('functions').select('*').order('name', { ascending: true })
+                ]);
+                if (storesRes.data) setStores(storesRes.data);
+                if (functionsRes.data) setFunctions(functionsRes.data);
+            } catch (err) {
+                console.error('Erro ao carregar dados de cadastro:', err);
+            }
+        };
+        fetchData();
+    }, []);
 
     // Sign Up Flow
     const handleSignUp = async (e) => {
@@ -36,8 +59,10 @@ export default function Login() {
                 setSuccessMsg('Conta criada! Verifique seu e-mail para pegar o código.');
                 setView('verify-email');
             } else if (data?.accessToken) {
-                setSession(data);
-                setUser(data.user);
+                await handleLoginSuccess(data, {
+                    store_id: storeId || null,
+                    function_id: functionId || null
+                });
             }
         } catch (err) {
             setErrorMsg('Ocorreu um erro inesperado.');
@@ -62,8 +87,7 @@ export default function Login() {
             if (error) {
                 setErrorMsg('E-mail ou senha inválidos.');
             } else if (data) {
-                setSession({ accessToken: data.accessToken, user: data.user });
-                setUser(data.user);
+                await handleLoginSuccess({ accessToken: data.accessToken, user: data.user });
             }
         } catch (err) {
             setErrorMsg('Ocorreu um erro inesperado.');
@@ -187,7 +211,7 @@ export default function Login() {
                         {view === 'reset-password' && 'Nova senha'}
                     </h2>
                     <p className="text-slate-500 text-sm mt-2 text-center">
-                        {view === 'sign-in' && 'Bem-vindo de volta à Trilha 90 Dias'}
+                        {view === 'sign-in' && 'Bem-vindo de volta ao Visão 360'}
                         {view === 'sign-up' && 'Inicie sua jornada rumo aos resultados reais'}
                         {view === 'verify-email' && 'Digite o código de 6 dígitos que enviamos para você'}
                         {view === 'forgot-password' && 'Enviaremos um código para redefinir sua senha'}
@@ -227,6 +251,32 @@ export default function Login() {
                                 />
                             </div>
                         </div>
+                    )}
+
+                    {/* Campo Loja (Apenas Cadastro) */}
+                    {view === 'sign-up' && (
+                        <CustomSelect
+                            label="Loja"
+                            value={storeId}
+                            onChange={(e) => setStoreId(e.target.value)}
+                            options={stores}
+                            placeholder="Selecione sua loja"
+                            icon={Store}
+                            required
+                        />
+                    )}
+
+                    {/* Campo Função (Apenas Cadastro) */}
+                    {view === 'sign-up' && (
+                        <CustomSelect
+                            label="Função"
+                            value={functionId}
+                            onChange={(e) => setFunctionId(e.target.value)}
+                            options={functions}
+                            placeholder="Selecione sua função"
+                            icon={Briefcase}
+                            required
+                        />
                     )}
 
                     {/* Campo E-mail */}

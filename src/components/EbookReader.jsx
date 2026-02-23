@@ -1,87 +1,13 @@
 import React from 'react';
 import { LogoAvil } from '../App';
+import EbookCover from './EbookCover';
 
 export default function EbookReader() {
     return (
         <div className="ebook-reader-container w-full min-h-screen bg-slate-50 pt-8 pb-32">
-
-
             {/*  CAPA  */}
-            <div className="page">
-                <div className="h-full gradient-primary relative overflow-hidden">
-                    {/*  Pattern overlay  */}
-                    <div className="absolute inset-0 pattern-dots"></div>
+            <EbookCover />
 
-                    {/*  Decorative elements  */}
-                    <svg className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 opacity-10" viewBox="0 0 400 400">
-                        <circle cx="200" cy="200" r="180" fill="none" stroke="#ed8936" strokeWidth="2" />
-                        <circle cx="200" cy="200" r="140" fill="none" stroke="#ed8936" strokeWidth="2" />
-                        <circle cx="200" cy="200" r="100" fill="none" stroke="#ed8936" strokeWidth="2" />
-                    </svg>
-
-                    <svg className="absolute bottom-0 left-0 w-48 h-48 md:w-64 md:h-64 opacity-10" viewBox="0 0 200 200">
-                        <polygon points="100,10 190,190 10,190" fill="none" stroke="#ed8936" strokeWidth="2" />
-                    </svg>
-
-                    {/*  Content  */}
-                    <div className="relative z-10 h-full flex flex-col">
-
-                        {/* Header Branco Centralizado com Logo igual Plano de Ação */}
-                        <div className="w-full flex items-center justify-center pt-8 pb-4 mb-4 border-b-2 border-slate-100 bg-white">
-                            <LogoAvil />
-                        </div>
-
-                        {/*  Main content  */}
-                        <div className="flex-1 flex flex-col justify-center px-12">
-                            <div className="max-w-xl">
-                                <div className="inline-block bg-accent text-white px-4 py-2 rounded-full text-sm font-semibold mb-6 mt-4 tracking-wider uppercase">
-                                    Guia Estratégico para Gestores
-                                </div>
-
-                                <h1 className="font-display text-2xl md:text-3xl md:text-5xl font-bold text-white leading-tight mb-6">
-                                    Saia do Operacional e Assuma o{' '}
-                                    <span className="text-gradient">Controle Estratégico</span>
-                                    {' '}da Sua Unidade
-                                </h1>
-
-                                <div className="w-20 h-1 bg-accent rounded mb-6"></div>
-
-                                <p className="text-xl text-blue-100 leading-relaxed mb-8">
-                                    Como Dominar os Indicadores, Liderar com Eficiência e Acelerar Resultados Reais <span className="text-accent font-bold">Apenas em 90 Dias</span>
-                                </p>
-
-                                {/*  Key stats  */}
-                                <div className="flex gap-6 mt-8">
-                                    <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
-                                        <div className="text-3xl font-bold text-accent">7</div>
-                                        <div className="text-sm text-blue-200">Capítulos</div>
-                                    </div>
-                                    <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
-                                        <div className="text-3xl font-bold text-accent">90</div>
-                                        <div className="text-sm text-blue-200">Dias de Transformação</div>
-                                    </div>
-                                    <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
-                                        <div className="text-3xl font-bold text-accent">15+</div>
-                                        <div className="text-sm text-blue-200">Exercícios Práticos</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/*  Footer  */}
-                        <div className="p-8">
-                            <div className="flex items-center justify-between">
-                                <div className="text-blue-200 text-sm">
-                                    Guia Prático para Varejo e Atacado
-                                </div>
-                                <svg className="w-8 h-8 text-accent animate-float" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M12 5v14M5 12h14" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/*  ÍNDICE  */}
             <div className="page p-4 md:p-8 pattern-grid">
@@ -209,6 +135,72 @@ export default function EbookReader() {
                     </div>
                 </div>
             </div>
+
+            {/*  ALINHAMENTO ESTRATÉGICO  */}
+            <div className="page p-8 md:p-12 pattern-grid">
+                <div className="h-full flex flex-col">
+                    {/* Header */}
+                    <div className="mb-10 text-center lg:text-left">
+                        <div className="inline-block bg-avil-orange-100 text-avil-orange-dark px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-4 border border-avil-orange-200">
+                            Manifesto
+                        </div>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-avil-blue-dark leading-tight tracking-tight mb-4">
+                            Alinhamento Estratégico: <br />
+                            <span className="text-avil-orange">O Novo Padrão de Gestão Avil</span>
+                        </h2>
+                        <div className="h-1.5 w-40 bg-avil-orange rounded-full"></div>
+                    </div>
+
+                    {/* Content Grid */}
+                    <div className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar">
+                        {/* Section 1 */}
+                        <div className="relative pl-8 border-l-2 border-slate-100 group hover:border-avil-blue transition-colors duration-300">
+                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-avil-blue shadow-sm group-hover:scale-110 transition-transform"></div>
+                            <h3 className="text-xl font-bold text-avil-blue-dark mb-3">1. O Cenário Atual</h3>
+                            <p className="text-slate-600 leading-relaxed text-lg">
+                                O varejo e o atacado são dinâmicos, mas a verdade é que a operação engole quem não tem método. É comum que profissionais que conhecem o chão de loja como ninguém acabem sufocados pelo operacional. Estar o tempo todo ocupado, resolvendo problemas de balcão e apagando incêndios, cria uma falsa sensação de produtividade. A realidade é dura: se você continua agindo como um "faz-tudo" , sendo o único que resolve os problemas da loja, você se torna um "super-operacional", e não um líder.
+                            </p>
+                        </div>
+
+                        {/* Section 2 */}
+                        <div className="relative pl-8 border-l-2 border-slate-100 group hover:border-avil-orange transition-colors duration-300">
+                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-avil-orange shadow-sm group-hover:scale-110 transition-transform"></div>
+                            <h3 className="text-xl font-bold text-avil-blue-dark mb-3">2. A Solução</h3>
+                            <p className="text-slate-600 leading-relaxed text-lg">
+                                É exatamente para romper essa mentalidade que este material foi criado. Nosso objetivo aqui é transformar a operação bruta de varejo e atacado em uma gestão estratégica de alta performance. Este e-book não é apenas um guia prático; é o manual de execução de um Ciclo de 90 Dias desenhado para que você saia do operacional, assuma o controle estratégico da sua unidade, domine os indicadores e acelere resultados reais.
+                            </p>
+                        </div>
+
+                        {/* Section 3 */}
+                        <div className="relative pl-8 border-l-2 border-slate-100 group hover:border-avil-blue transition-colors duration-300">
+                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-avil-blue shadow-sm group-hover:scale-110 transition-transform"></div>
+                            <h3 className="text-xl font-bold text-avil-blue-dark mb-3">3. O Escopo e o Seu Papel</h3>
+                            <p className="text-slate-600 leading-relaxed text-lg">
+                                Toda grande mudança na cultura da empresa começa pela gerência. O projeto se inicia com você porque o seu comportamento dita o ritmo da equipe. O foco desta jornada é que você assuma definitivamente o papel de mentor e estrategista. Ao aplicar o diagnóstico correto e conquistar vitórias rápidas, você construirá a autoridade necessária para, no futuro, cascatear essa mesma mentalidade para as demais lideranças e coordenadores da rede.
+                            </p>
+                        </div>
+
+                        {/* Section 4 */}
+                        <div className="relative pl-8 border-l-2 border-slate-100 group hover:border-avil-orange transition-colors duration-300">
+                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-avil-orange shadow-sm group-hover:scale-110 transition-transform"></div>
+                            <h3 className="text-xl font-bold text-avil-blue-dark mb-3">4. O Que Esperamos de Você</h3>
+                            <p className="text-slate-600 leading-relaxed text-lg">
+                                A partir de hoje, a expectativa sobre o seu trabalho muda. O olhar deixa de ser apenas sobre volume de vendas e passa a focar nos três pilares financeiros vitais: Entrada, Giro e Margem. Lembre-se sempre de que dinheiro parado na prateleira é prejuízo. Esperamos que você construa uma agenda blindada para analisar os números da sua unidade e, acima de tudo, que forme uma equipe autônoma, que não dependa do gestor para cada detalhe do dia a dia.
+                            </p>
+                        </div>
+
+                        {/* Section 5 */}
+                        <div className="relative pl-8 border-l-2 border-slate-100 group hover:border-avil-blue transition-colors duration-300">
+                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-avil-blue shadow-sm group-hover:scale-110 transition-transform"></div>
+                            <h3 className="text-xl font-bold text-avil-blue-dark mb-3">5. O Retorno: Ganhos Reais</h3>
+                            <p className="text-slate-600 leading-relaxed text-lg">
+                                O resultado dessa transformação beneficia a todos. Para a empresa, o sucesso será medido na prática com a melhora real na última linha do DRE (lucro líquido) e a identificação de onde o dinheiro está escorrendo com quebras e perdas. Para você, esse ciclo significa construir uma operação que roda sozinha e estar pronto para os novos desafios e o próximo nível da sua carreira. O sucesso da sua unidade está em suas mãos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             {/*  INTRODUÇÃO  */}
             <div className="page p-8">

@@ -6,8 +6,14 @@ import { AuthProvider } from './contexts/AuthContext.jsx'
 
 // Registrar PWA Service Worker
 if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
+  });
   import('virtual:pwa-register').then(({ registerSW }) => {
-    registerSW({ immediate: true })
+    // Apenas registra se não estivermos em dev com o fix ativo
+    // registerSW({ immediate: true })
   })
 }
 

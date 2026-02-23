@@ -17,10 +17,14 @@ import {
   ListTodo,
   Download,
   Printer,
-  LogOut
+  LogOut,
+  ShieldAlert,
+  Settings
 } from 'lucide-react';
 import EbookReader from './components/EbookReader';
 import UserProfile from './components/UserProfile';
+import AdminPanel from './components/AdminPanel';
+import ProfileModal from './components/ProfileModal';
 import { insforge } from './lib/insforge';
 
 const EBOOK_DATA = [
@@ -318,13 +322,15 @@ const CompleteActionPlan = ({ completedTasks }) => {
 };
 
 export default function App() {
-  const { user, loading } = useAuth();
+  const { user, profile, loading, isAuthorized, isAdmin } = useAuth();
   const [activeMode, setActiveMode] = useLocalStorage('avil_mode', 'reading'); // Changed key and default value
   const [completedTasks, setCompletedTasks] = useLocalStorage('avil_tasks', {}); // Changed key
   const [currentPage, setCurrentPage] = useLocalStorage('avil_page', 0); // Changed key
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false); // Added state
   const [pdfStatus, setPdfStatus] = useState(""); // Added state
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -414,7 +420,7 @@ export default function App() {
             >
               <X size={20} />
             </button>
-            <UserProfile />
+            <UserProfile onOpenAdminPanel={() => setIsAdminPanelOpen(true)} onOpenProfile={() => setIsProfileModalOpen(true)} />
           </div>
         </div>
 
@@ -455,6 +461,28 @@ export default function App() {
       </div>
     </div>
   );
+
+  if (!isAuthorized && !isAdmin) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-24 h-24 bg-avil-orange-100 rounded-full flex items-center justify-center mb-8 animate-pulse text-avil-orange-dark shadow-xl shadow-avil-orange/20 border-4 border-white text-3xl font-black">
+          <ShieldAlert size={56} strokeWidth={2.5} />
+        </div>
+        <h1 className="text-4xl font-black text-avil-blue-dark mb-4 tracking-tighter uppercase">Acesso Pendente</h1>
+        <p className="text-slate-600 max-w-md mx-auto leading-relaxed text-lg mb-10 font-medium">
+          Sua conta para <span className="text-avil-blue font-bold">{user?.email}</span> foi criada, mas ainda não foi autorizada por um administrador da AVIL.
+        </p>
+        <div className="bg-slate-50 border border-slate-100 p-8 rounded-[32px] mb-12 w-full max-w-sm shadow-inner relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-full h-1 bg-avil-orange opacity-50" />
+          <h2 className="font-black text-avil-blue-dark mb-3 uppercase text-xs tracking-widest">Próximo Passo</h2>
+          <p className="text-sm text-slate-500 leading-relaxed">
+            Fale com o gestor responsável para liberar seu acesso no sistema. Você receberá acesso completo assim que for autorizado.
+          </p>
+        </div>
+        <UserProfile onOpenAdminPanel={() => setIsAdminPanelOpen(true)} onOpenProfile={() => setIsProfileModalOpen(true)} />
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen print:min-h-0 bg-slate-50 text-slate-900 font-sans selection:bg-avil-orange-100 selection:text-avil-orange-dark ${activeMode === 'reading' ? 'mode-reading' : 'mode-task'}`}>
@@ -538,10 +566,10 @@ export default function App() {
                 </button>
               </>
             )}
-            <UserProfile />
+            <UserProfile onOpenAdminPanel={() => setIsAdminPanelOpen(true)} onOpenProfile={() => setIsProfileModalOpen(true)} />
           </div>
         </div>
-      </header>
+      </header >
 
       {activeMode === 'reading' ? (
         <main className="w-full flex-1">
@@ -744,7 +772,9 @@ export default function App() {
       )
       }
       <CompleteActionPlan completedTasks={completedTasks} />
+      <AdminPanel isOpen={isAdminPanelOpen} onClose={() => setIsAdminPanelOpen(false)} />
+      <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
       <PrintFooter />
-    </div>
+    </div >
   );
 }

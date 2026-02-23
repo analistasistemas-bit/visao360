@@ -13,13 +13,13 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['logo.jpeg', 'vite.svg'],
       devOptions: {
-        enabled: true, // Garante que a PWA funcione durante o npm run dev
+        enabled: false, // Desabilitado para evitar interferência de cache no download de PDF
         type: 'module',
       },
       manifest: {
         name: 'Visão 360',
         short_name: 'Visão 360',
-        description: 'Ebook: De Operacional a Estrategista em 90 dias',
+        description: 'Gestão Estratégica',
         theme_color: '#0F172A', // text-slate-900 (primary)
         background_color: '#ffffff',
         display: 'standalone',

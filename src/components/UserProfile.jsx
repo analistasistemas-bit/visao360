@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LogOut, User, ChevronDown, Mail } from 'lucide-react';
+import { LogOut, User, ChevronDown, Mail, Shield, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { insforge } from '../lib/insforge';
 
-export default function UserProfile() {
-    const { user } = useAuth();
+export default function UserProfile({ onOpenAdminPanel, onOpenProfile }) {
+    const { user, isAdmin } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
+    const [signingOut, setSigningOut] = useState(false);
     const dropdownRef = useRef(null);
 
     // Close dropdown when clicking outside
@@ -20,11 +21,17 @@ export default function UserProfile() {
     }, []);
 
     const handleSignOut = async () => {
+        setSigningOut(true);
+        // Apply a global "wait" cursor
+        document.body.style.cursor = 'wait';
+
         try {
             await insforge.auth.signOut();
             window.location.reload();
         } catch (error) {
             console.error('Erro ao sair:', error);
+            setSigningOut(false);
+            document.body.style.cursor = 'default';
         }
     };
 
@@ -72,23 +79,41 @@ export default function UserProfile() {
                 <div className="p-2">
                     <button
                         onClick={() => {
-                            // Future: Link to profile settings
+                            onOpenProfile?.();
                             setIsOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 rounded-xl hover:bg-slate-50 transition-colors text-left"
                     >
                         <User size={18} className="text-slate-400" />
                         Meu Perfil
                     </button>
 
+                    {isAdmin && (
+                        <button
+                            onClick={() => {
+                                onOpenAdminPanel?.();
+                                setIsOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-avil-blue-dark rounded-xl hover:bg-avil-blue-100/30 transition-colors text-left"
+                        >
+                            <Shield size={18} className="text-avil-blue" />
+                            Painel de Controle
+                        </button>
+                    )}
+
                     <div className="my-1 border-t border-slate-50" />
 
                     <button
                         onClick={handleSignOut}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 rounded-xl hover:bg-red-50 transition-colors group"
+                        disabled={signingOut}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 rounded-xl hover:bg-red-50 transition-all duration-300 group active:scale-95 disabled:opacity-70 ${signingOut ? 'cursor-wait' : ''}`}
                     >
-                        <LogOut size={18} className="text-red-400 group-hover:text-red-600 transition-colors" />
-                        Sair da Conta
+                        {signingOut ? (
+                            <Loader2 size={18} className="text-red-600 animate-spin" />
+                        ) : (
+                            <LogOut size={18} className="text-red-400 group-hover:text-red-600 transition-colors" />
+                        )}
+                        {signingOut ? 'Saindo...' : 'Sair da Conta'}
                     </button>
                 </div>
             </div>

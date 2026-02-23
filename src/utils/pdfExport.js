@@ -1,5 +1,6 @@
 import { domToJpeg } from 'modern-screenshot';
 import { jsPDF } from 'jspdf';
+import { saveAs } from 'file-saver';
 
 /**
  * Utilitário de exportação de PDF de alta fidelidade com disparador de download ultra-robusto.
@@ -79,30 +80,28 @@ export const generatePDF = async (elementSelector, filename, setPdfStatus) => {
             .replace(/[^a-z0-9]/gi, '_')     // Tudo que não é alfanumérico vira _
             .replace(/_+/g, '_')             // Evita múltiplos underscores
             .toLowerCase();
+
+        // Sanitização final para garantir ASCII puro (extremo)
         const finalName = `${safeName}.pdf`;
 
-        console.log("Gerando Blob e disparando download para:", finalName);
+        console.log("Preparando download final para:", finalName);
 
-        // EXTRAÇÃO DO BLOB PARA DOWNLOAD CABEÇALHO-LIMPO
-        const blob = pdf.output('blob');
-        const url = window.URL.createObjectURL(blob);
+        try {
+            // MÉTODO 1: jsPDF.save() - O método oficial e mais testado da biblioteca
+            // Ele já incorpora internamente lógicas de fallback para diversos browsers.
+            pdf.save(finalName);
+            console.log("Download via pdf.save() processado.");
+        } catch (saveError) {
+            console.warn("pdf.save() falhou, tentando fallback com File + saveAs:", saveError);
 
-        // Disparo via tag anchor oculta - padrão ouro de compatibilidade
-        const link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', finalName);
-
-        document.body.appendChild(link);
-        link.click();
-
-        console.log("Download iniciado manualmente.");
-
-        // Cleanup após delay para o browser respirar
-        setTimeout(() => {
-            if (document.body.contains(link)) document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }, 2500);
+            // MÉTODO 2 (Fallback): File Constructor + saveAs
+            // O objeto 'File' permite embutir o nome do arquivo diretamente no objeto,
+            // o que ajuda browsers como Safari a não perderem o contexto do nome.
+            const pdfBlob = pdf.output('blob');
+            const pdfFile = new File([pdfBlob], finalName, { type: 'application/pdf' });
+            saveAs(pdfFile, finalName);
+            console.log("Download via fallback saveAs(File) processado.");
+        }
 
         return true;
 
