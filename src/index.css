@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+@theme {
+  --color-avil-blue: #004d9c;
+  --color-avil-blue-light: #1a63af;
+  --color-avil-blue-dark: #00366b;
+  --color-avil-blue-100: #e6f0fa;
+  --color-avil-orange: #f27c00;
+  --color-avil-orange-light: #ff9426;
+  --color-avil-orange-dark: #cc6900;
+  --color-avil-orange-100: #fef0e3;
+  --color-primary: #1a365d;
+  --color-secondary: #2c5282;
+  --color-accent: #ed8936;
+  --color-accent-dark: #dd6b20;
+  --color-light: #f7fafc;
+  --color-dark: #1a202c;
+  --color-muted: #4a5568;
+  --color-surface: #edf2f7;
+  --color-card: #ffffff;
+  --color-border: #e2e8f0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* 
+  Ebook Reader Component Custom Styles
+  (Retrieved from the original ebook HTML)
+*/
+.ebook-reader-container {
+  --primary: #1a365d;
+  --secondary: #2c5282;
+  --accent: #ed8936;
+  --accent-dark: #dd6b20;
+  --light: #f7fafc;
+  --dark: #1a202c;
+
+  font-family: 'Source Sans 3', sans-serif;
+  color: var(--dark);
+}
+
+.ebook-reader-container .font-display {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.ebook-reader-container .page {
+  max-width: 210mm;
+  width: 100%;
+  min-height: 297mm;
+  background: white;
+  margin: 0 auto 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+@media screen {
+  .ebook-reader-container .page {
+    margin: 20px auto;
+  }
+}
+
+.ebook-reader-container .gradient-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  /* Fix "letras que nao dar pra enxergar" because by default container has dark text */
+}
+
+.ebook-reader-container .gradient-accent {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: white;
+}
+
+.ebook-reader-container .text-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, #f6ad55 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ebook-reader-container .pattern-dots {
+  background-image: radial-gradient(circle, rgba(237, 137, 54, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.ebook-reader-container .pattern-grid {
+  background-image:
+    linear-gradient(rgba(26, 54, 93, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 54, 93, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.ebook-reader-container .checklist-item {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 12px;
+}
+
+.ebook-reader-container .checklist-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+}
+
+.ebook-reader-container .checklist-item::after {
+  content: '✓';
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.ebook-reader-container .chapter-number {
+  font-size: 120px;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0.1;
+  position: absolute;
+  top: -20px;
+  right: 20px;
+}
+
+.ebook-reader-container .card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ebook-reader-container .card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+}
+
+.ebook-reader-container .animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* --- ESTILOS DE IMPRESSÃO (NATIVO/WYSIWYG) --- */
+@media print {
+  @page {
+    margin: 15mm;
+  }
+
+  /* Reset suave para habilitar fundos de Tailwind */
+  body,
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: #0f172a !important;
+  }
+
+  /* Ocultar elementos UI interativos */
+  header,
+  nav,
+  button,
+  .print-hidden,
+  .sidebar-container,
+  .fixed.bottom-0 {
+    display: none !important;
+  }
+
+  /* Controle de Modos e Telas durante impressão */
+  .mode-task main:not(.print-content) {
+    display: none !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:flex {
+    display: flex !important;
+  }
+
+  /* Ajustes limpos - SEM modificar blocos flex e grids nativos */
+  main {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Impedir quebra de itens principais e cards */
+  .card,
+  .break-inside-avoid,
+  li,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  img,
+  svg {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Ebook Pages */
+  .ebook-reader-container .page {
+    page-break-after: always;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .ebook-reader-container .page:last-child {
+    page-break-after: auto;
+  }
+
+  /* Rodapé estabilizado no fluxo final (Não fixo, logo não sobrepõe) */
+  .print-footer-container {
+    padding-top: 20px;
+    margin-top: 40px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  /* Garantir que os capítulos de plano de ação fiquem organizados */
+  .print-chapter {
+    page-break-before: always;
+  }
+
+  .print-chapter:first-child {
+    page-break-before: avoid;
+  }
+}
