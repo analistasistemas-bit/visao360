@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, User, Mail, Building2, ClipboardList, Save, Loader2, CheckCircle2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { insforge } from '../lib/insforge';
 
 export default function ProfileModal({ isOpen, onClose }) {
-    const { user, profile, refreshProfile } = useAuth();
+    const auth = useAuth() || {};
+    const { user, profile, refreshProfile } = auth;
     const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [storeName, setStoreName] = useState('...');
     const [functionName, setFunctionName] = useState('...');
 
-    useEffect(() => {
-        if (profile) {
-            setName(profile.name || '');
-            fetchDetails();
-        }
-    }, [profile, isOpen]);
-
-    const fetchDetails = async () => {
+    const fetchDetails = useCallback(async () => {
         if (!profile) return;
 
         try {
@@ -40,7 +34,14 @@ export default function ProfileModal({ isOpen, onClose }) {
         } catch (err) {
             console.error('Erro ao buscar nomes de loja/função:', err);
         }
-    };
+    }, [profile]);
+
+    useEffect(() => {
+        if (profile) {
+            setName(profile.name || '');
+            fetchDetails();
+        }
+    }, [profile, isOpen, fetchDetails]);
 
     const handleSave = async (e) => {
         e.preventDefault();

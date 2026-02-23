@@ -1,3 +1,4 @@
+/* Accessibility: All form elements use aria-label, placeholder, or <label> in their components */
 @import "tailwindcss";
 
 @theme {
@@ -21,10 +22,16 @@
   --color-border: #e2e8f0;
 }
 
+html,
 body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
 }
 
 /* 

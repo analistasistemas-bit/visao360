@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { insforge } from '../lib/insforge';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import {
     UserCheck,
     UserX,
@@ -18,18 +18,19 @@ import {
     Briefcase,
     Plus,
     Building2,
-    ClipboardList
+    ClipboardList,
+    Edit2
 } from 'lucide-react';
 
 // ─── Sub-component: Manage a list of items (stores or functions) ────────────
-function ManageList({ tableName, label, icon: Icon }) {
+function ManageList({ tableName, label, icon: ListItemIcon }) { // eslint-disable-line no-unused-vars
     const [items, setItems] = useState([]);
     const [newName, setNewName] = useState('');
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
 
-    const fetchItems = async () => {
+    const fetchItems = useCallback(async () => {
         setLoading(true);
         try {
             const { data, error } = await insforge.database
@@ -43,11 +44,11 @@ function ManageList({ tableName, label, icon: Icon }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [tableName, label]);
 
     useEffect(() => {
         fetchItems();
-    }, []);
+    }, [fetchItems]);
 
     const handleAdd = async (e) => {
         e.preventDefault();
@@ -94,7 +95,7 @@ function ManageList({ tableName, label, icon: Icon }) {
             <form onSubmit={handleAdd} className="flex gap-2">
                 <div className="relative flex-1">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon className="h-4 w-4 text-slate-400" />
+                        <ListItemIcon className="h-4 w-4 text-slate-400" />
                     </div>
                     <input
                         type="text"
@@ -121,7 +122,7 @@ function ManageList({ tableName, label, icon: Icon }) {
                 </div>
             ) : items.length === 0 ? (
                 <div className="h-32 flex flex-col items-center justify-center text-slate-400 gap-2">
-                    <Icon size={32} strokeWidth={1.5} />
+                    <ListItemIcon size={32} strokeWidth={1.5} />
                     <p className="text-sm font-medium">Nenhuma {label.toLowerCase()} cadastrada</p>
                 </div>
             ) : (
@@ -133,7 +134,7 @@ function ManageList({ tableName, label, icon: Icon }) {
                         >
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 bg-avil-blue/10 rounded-lg flex items-center justify-center">
-                                    <Icon size={16} className="text-avil-blue" />
+                                    <ListItemIcon size={16} className="text-avil-blue" />
                                 </div>
                                 <span className="font-semibold text-slate-700 text-sm">{item.name}</span>
                             </div>
@@ -169,6 +170,12 @@ export default function AdminPanel({ isOpen, onClose }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
+    const [editingUser, setEditingUser] = useState(null);
+    const [editName, setEditName] = useState('');
+    const [editStoreId, setEditStoreId] = useState('');
+    const [editFunctionId, setEditFunctionId] = useState('');
+    const [storesList, setStoresList] = useState([]);
+    const [functionsList, setFunctionsList] = useState([]);
 
     // Tabs: 'users' | 'stores' | 'functions'
     const [activeTab, setActiveTab] = useState('users');
@@ -187,11 +194,13 @@ export default function AdminPanel({ isOpen, onClose }) {
                 const map = {};
                 storesRes.data.forEach(s => { map[s.id] = s.name; });
                 setStoreMap(map);
+                setStoresList(storesRes.data);
             }
             if (functionsRes.data) {
                 const map = {};
                 functionsRes.data.forEach(f => { map[f.id] = f.name; });
                 setFunctionMap(map);
+                setFunctionsList(functionsRes.data);
             }
         } catch (err) {
             console.error('Erro ao buscar mapas:', err);
@@ -252,6 +261,34 @@ export default function AdminPanel({ isOpen, onClose }) {
             await fetchProfiles();
         } catch (err) {
             console.error('Erro ao atualizar papel:', err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleUpdateUser = async (e) => {
+        e.preventDefault();
+        if (!editingUser) return;
+        const trimmedName = editName.trim();
+        setActionLoading(editingUser.id);
+
+        try {
+            const { error } = await insforge.database
+                .from('profiles')
+                .update({
+                    name: trimmedName || null,
+                    store_id: editStoreId || null,
+                    function_id: editFunctionId || null,
+                })
+                .eq('id', editingUser.id);
+
+            if (error) throw error;
+            setEditingUser(null);
+            await fetchProfiles();
+            await fetchMaps();
+        } catch (err) {
+            console.error('Erro ao atualizar usuário:', err);
+            alert('Erro ao atualizar. Tente novamente.');
         } finally {
             setActionLoading(null);
         }
@@ -409,6 +446,21 @@ export default function AdminPanel({ isOpen, onClose }) {
                                             </div>
 
                                             <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                {/* Edit User Button */}
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingUser(user);
+                                                        setEditName(user.name || '');
+                                                        setEditStoreId(user.store_id || '');
+                                                        setEditFunctionId(user.function_id || '');
+                                                    }}
+                                                    disabled={actionLoading === user.id}
+                                                    className="p-2 rounded-xl border-2 border-slate-100 text-slate-400 hover:border-avil-orange hover:text-avil-orange hover:bg-orange-50 transition-all disabled:opacity-50"
+                                                    title="Editar usuário"
+                                                >
+                                                    <Edit2 size={18} />
+                                                </button>
+
                                                 {/* Authorization Button */}
                                                 <button
                                                     onClick={() => handleToggleAuthorization(user.id, user.is_authorized)}
@@ -523,6 +575,98 @@ export default function AdminPanel({ isOpen, onClose }) {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit User Modal */}
+            {editingUser && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setEditingUser(null)} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-in fade-in zoom-in duration-200">
+                        <form onSubmit={handleUpdateUser} className="space-y-4">
+                            <div className="flex flex-col items-center text-center gap-2 mb-4">
+                                <div className="bg-avil-blue/10 p-3 rounded-full text-avil-blue">
+                                    <Edit2 size={24} />
+                                </div>
+                                <h3 className="text-lg font-black text-slate-800">Editar Usuário</h3>
+                                <p className="text-xs text-slate-500">{editingUser.email}</p>
+                            </div>
+
+                            {/* Nome */}
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">Nome Completo</label>
+                                <input
+                                    type="text"
+                                    autoFocus
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    placeholder="Digite o nome..."
+                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-avil-blue/20 outline-none text-sm font-medium transition-all"
+                                />
+                            </div>
+
+                            {/* Loja */}
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Building2 size={11} /> Loja
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        value={editStoreId}
+                                        onChange={(e) => setEditStoreId(e.target.value)}
+                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-avil-blue/20 outline-none text-sm font-medium transition-all appearance-none"
+                                    >
+                                        <option value="">— Sem loja —</option>
+                                        {storesList.map(s => (
+                                            <option key={s.id} value={s.id}>{s.name}</option>
+                                        ))}
+                                    </select>
+                                    <Store size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                </div>
+                            </div>
+
+                            {/* Função */}
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider flex items-center gap-1.5">
+                                    <ClipboardList size={11} /> Função
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        value={editFunctionId}
+                                        onChange={(e) => setEditFunctionId(e.target.value)}
+                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-avil-blue/20 outline-none text-sm font-medium transition-all appearance-none"
+                                    >
+                                        <option value="">— Sem função —</option>
+                                        {functionsList.map(f => (
+                                            <option key={f.id} value={f.id}>{f.name}</option>
+                                        ))}
+                                    </select>
+                                    <Briefcase size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingUser(null)}
+                                    className="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={actionLoading === editingUser.id}
+                                    className="flex-1 px-4 py-2.5 rounded-xl bg-avil-blue text-white font-bold text-sm hover:bg-avil-blue-dark transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {actionLoading === editingUser.id ? (
+                                        <Loader2 size={16} className="animate-spin" />
+                                    ) : (
+                                        'Salvar'
+                                    )}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

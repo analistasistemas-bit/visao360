@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogoAvil } from '../App';
+import { LogoAvil } from './LogoAvil';
 
 const EbookCover = () => {
     return (

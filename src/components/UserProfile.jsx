@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LogOut, User, ChevronDown, Mail, Shield, Loader2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { insforge } from '../lib/insforge';
 
 export default function UserProfile({ onOpenAdminPanel, onOpenProfile }) {

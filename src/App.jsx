@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { generatePDF } from './utils/pdfExport';
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from './hooks/useAuth';
 import Login from './components/Login';
 
 import {
@@ -25,7 +25,8 @@ import EbookReader from './components/EbookReader';
 import UserProfile from './components/UserProfile';
 import AdminPanel from './components/AdminPanel';
 import ProfileModal from './components/ProfileModal';
-import { insforge } from './lib/insforge';
+import { LogoAvil } from './components/LogoAvil';
+
 
 const EBOOK_DATA = [
   {
@@ -167,19 +168,7 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setValue];
 }
 
-/* 
-  LOGO AVIL COMPONENTE
-  Estilizado para recriar o visual da foto (fundo azul cantos arredondados, texto laranja)
-*/
-/* 
-  LOGO AVIL COMPONENTE
-  Atualizado para usar a imagem logo.jpeg conforme solicitação do usuário.
-*/
-export const LogoAvil = () => (
-  <div className="flex items-center">
-    <img src="/logo.jpeg" alt="AVIL" className="h-10 md:h-12 object-contain" />
-  </div>
-);
+
 
 const PrintHeader = () => (
   <div className="hidden print:flex flex-col items-center justify-center mb-10 w-full print-header-container">
@@ -218,7 +207,7 @@ const CompleteActionPlan = ({ completedTasks }) => {
           <div className="flex-1 flex flex-col justify-start gap-12 w-full max-w-5xl mx-auto">
             {pageChapters.map((chapter, chapterOffset) => {
               const idx = pageIdx * 2 + chapterOffset;
-              const allTasksInChapterCompleted = chapter.checklists && chapter.checklists.every((_, tIdx) => completedTasks[`${chapter.id}-${tIdx}`]);
+
 
               return (
                 <div key={idx} className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start w-full">
@@ -322,7 +311,8 @@ const CompleteActionPlan = ({ completedTasks }) => {
 };
 
 export default function App() {
-  const { user, profile, loading, isAuthorized, isAdmin } = useAuth();
+  const auth = useAuth() || {};
+  const { user, loading, isAuthorized, isAdmin } = auth;
   const [activeMode, setActiveMode] = useLocalStorage('avil_mode', 'reading'); // Changed key and default value
   const [completedTasks, setCompletedTasks] = useLocalStorage('avil_tasks', {}); // Changed key
   const [currentPage, setCurrentPage] = useLocalStorage('avil_page', 0); // Changed key
@@ -485,7 +475,7 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen print:min-h-0 bg-slate-50 text-slate-900 font-sans selection:bg-avil-orange-100 selection:text-avil-orange-dark ${activeMode === 'reading' ? 'mode-reading' : 'mode-task'}`}>
+    <div className={`min-h-screen flex flex-col print:min-h-0 bg-slate-50 text-slate-900 font-sans selection:bg-avil-orange-100 selection:text-avil-orange-dark ${activeMode === 'reading' ? 'mode-reading' : 'mode-task'}`}>
       <PrintHeader />
 
       <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-xl border-b border-slate-200 shadow-sm flex justify-center print:hidden">

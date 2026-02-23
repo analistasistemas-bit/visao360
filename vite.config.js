@@ -20,6 +20,8 @@ export default defineConfig({
         name: 'Visão 360',
         short_name: 'Visão 360',
         description: 'Gestão Estratégica',
+        start_url: '/',
+        scope: '/',
         theme_color: '#0F172A', // text-slate-900 (primary)
         background_color: '#ffffff',
         display: 'standalone',

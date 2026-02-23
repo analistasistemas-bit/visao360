@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { insforge } from '../lib/insforge';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { Mail, Key, User, ArrowRight, Loader2, Store, Briefcase } from 'lucide-react';
-import { LogoAvil } from '../App'; // Importing the logo component from App
+import { LogoAvil } from './LogoAvil'; // Importing the logo component from LogoAvil
 import CustomSelect from './CustomSelect';
 
 export default function Login() {
@@ -60,11 +60,13 @@ export default function Login() {
                 setView('verify-email');
             } else if (data?.accessToken) {
                 await handleLoginSuccess(data, {
+                    name: name, // Mandar o nome explicitamente
                     store_id: storeId || null,
                     function_id: functionId || null
                 });
             }
         } catch (err) {
+            console.error('Sign up error:', err);
             setErrorMsg('Ocorreu um erro inesperado.');
         } finally {
             setLoading(false);
@@ -90,6 +92,7 @@ export default function Login() {
                 await handleLoginSuccess({ accessToken: data.accessToken, user: data.user });
             }
         } catch (err) {
+            console.error('Sign in error:', err);
             setErrorMsg('Ocorreu um erro inesperado.');
         } finally {
             setLoading(false);
@@ -112,10 +115,10 @@ export default function Login() {
             if (error) {
                 setErrorMsg('Código inválido ou expirado.');
             } else if (data) {
-                setSession({ accessToken: data.accessToken, user: data.user });
-                setUser(data.user);
+                await handleLoginSuccess({ accessToken: data.accessToken, user: data.user });
             }
         } catch (err) {
+            console.error('Verify email error:', err);
             setErrorMsg('Ocorreu um erro inesperado. Tente novamente.');
         } finally {
             setLoading(false);
@@ -138,6 +141,7 @@ export default function Login() {
                 setView('reset-password');
             }
         } catch (err) {
+            console.error('Forgot password error:', err);
             setErrorMsg('Ocorreu um erro inesperado.');
         } finally {
             setLoading(false);
@@ -179,6 +183,7 @@ export default function Login() {
                 setPassword('');
             }
         } catch (err) {
+            console.error('Error:', err);
             setErrorMsg('Ocorreu um erro inesperado.');
         } finally {
             setLoading(false);

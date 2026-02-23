@@ -1,0 +1,7 @@
+dist
+dev-dist
+node_modules
+.agent
+.shared
+*.config.js
+*.config.cjs

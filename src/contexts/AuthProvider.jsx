@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { insforge } from '../lib/insforge';
-
-const AuthContext = createContext();
+import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -25,9 +24,16 @@ export function AuthProvider({ children }) {
 
             if (!data) {
                 // Try to create it
+                // Extract name from user metadata if not in additionalData
+                const userName = additionalData?.name ||
+                    insforge.auth.getUser()?.user_metadata?.full_name ||
+                    insforge.auth.getUser()?.user_metadata?.name ||
+                    null;
+
                 const profileToInsert = {
                     id: userId,
                     email: userEmail,
+                    name: userName, // Ensure name is included
                     role: 'user',
                     is_authorized: false,
                     ...additionalData
@@ -116,6 +122,4 @@ export function AuthProvider({ children }) {
     );
 }
 
-export function useAuth() {
-    return useContext(AuthContext);
-}
+

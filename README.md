@@ -1,6 +1,17 @@
-# React + Vite
+# Visão 360 - Avil
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema de gestão e capacitação para as lojas Avil.
+
+## Funcionalidades Principais
+- **Leitor de E-book PWA**: Carregamento instantâneo via renderização diferida e otimização PWA para Mobile Chrome.
+- **Integração Supabase**: Autenticação e persistência de dados via banco relacional.
+
+## Estrutura de Engenharia (Staff/Elite)
+Este projeto segue rigorosamente o padrão de engenharia definido em `CLAUDE.md`:
+- `tasks/todo.md`: Roadmap ativo e status de desenvolvimento.
+- `tasks/lessons.md`: Log de aprendizados técnicos e prevenção de erros.
+- `docs/adr/`: Registros de Decisões Arquiteturais.
+- `docs/runbooks/`: Procedimentos operacionais e de deploy.
 
 Currently, two official plugins are available:
 
